@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'pdf_service.dart';
 
 class AirtableService {
   static const String _baseUrl = 'https://api.airtable.com/v0';
@@ -18,15 +19,26 @@ class AirtableService {
     required String email,
     required String resumeDevis,
   }) async {
-    // Construction de l'URL de l'API Airtable
-    final url = '$_baseUrl/$baseId/$tableName';
-    
     try {
-      print('🔄 Envoi des données à Airtable...');
-      print('🔑 Clé API: ${apiKey.substring(0, 10)}...');
-      print('🌐 URL: $url');
-      print('📊 Base ID: $baseId');
-      print('📋 Table: $tableName');
+      print('🔄 Génération du PDF...');
+      final pdfBytes = await PdfService.generateDevisPdf(
+        clientName: nomClient,
+        email: email,
+        resume: resumeDevis,
+      );
+      
+      // Convertir le PDF en base64
+      final pdfBase64 = base64Encode(pdfBytes);
+      final fileName = 'devis_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      
+      print('📄 PDF généré (${pdfBytes.length} octets)');
+      
+      // Préparer les données pour Airtable
+      final url = '$_baseUrl/$baseId/$tableName';
+      final headers = {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      };
       
       final body = {
         'fields': {
@@ -34,18 +46,22 @@ class AirtableService {
           'Email': email,
           'Date': DateTime.now().toIso8601String(),
           'Résumé': resumeDevis,
+          'PDF': [
+            {
+              'url': 'data:application/pdf;base64,$pdfBase64',
+              'filename': fileName,
+            }
+          ],
         },
       };
       
-      print('Données à envoyer: ${jsonEncode(body)}');
+      print('🌐 Envoi des données à Airtable...');
+      print('🔗 URL: $url');
       
-      print('📤 Envoi de la requête...');
+      print('📤 Envoi de la requête avec pièce jointe...');
       final response = await http.post(
         Uri.parse(url),
-        headers: {
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-        },
+        headers: headers,
         body: jsonEncode(body),
       );
 
