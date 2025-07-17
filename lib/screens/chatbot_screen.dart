@@ -96,16 +96,26 @@ class FestivalPreferences {
   // Méthode pour obtenir une valeur par sa clé
   dynamic operator [](String key) {
     switch (key) {
-      case 'numberOfPeople': return numberOfPeople;
-      case 'destinationCountry': return destinationCountry;
-      case 'destinationCity': return destinationCity;
-      case 'travelDate': return travelDate;
-      case 'duration': return duration;
-      case 'musicGenre': return musicGenre;
-      case 'budget': return budget;
-      case 'name': return name;
-      case 'email': return email;
-      default: return null;
+      case 'numberOfPeople': 
+        return numberOfPeople is String ? int.tryParse(numberOfPeople) : numberOfPeople;
+      case 'destinationCountry': 
+        return destinationCountry;
+      case 'destinationCity': 
+        return destinationCity;
+      case 'travelDate': 
+        return travelDate;
+      case 'duration': 
+        return duration is String ? int.tryParse(duration) : duration;
+      case 'musicGenre': 
+        return musicGenre;
+      case 'budget': 
+        return budget is String ? int.tryParse(budget) : budget;
+      case 'name': 
+        return name;
+      case 'email': 
+        return email;
+      default: 
+        return null;
     }
   }
 }
@@ -464,9 +474,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
     try {
       final airtable = AirtableService(
-        apiKey: 'votre_api_key_airtable', // À remplacer par votre clé API Airtable
-        baseId: 'votre_base_id',          // À remplacer par l'ID de votre base
-        tableName: 'Devis',                // Nom de votre table Airtable
+        apiKey: airtableApiKey,
+        baseId: airtableBaseId,
+        tableName: airtableTableName,
       );
 
       // Récupérer la dernière réponse de l'IA
