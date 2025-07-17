@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:groove_nomad/main.dart';
+import 'package:groove_nomad/services/airtable_service.dart';
 
 // Modèle pour stocker les réponses du formulaire
 class FestivalPreferences {
@@ -129,6 +130,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
   String? _apiKey;
+  String _lastDevisContent = ''; // Pour stocker le dernier devis généré
   
   // État du formulaire
   late FestivalPreferences _preferences = FestivalPreferences()..email = 'hector.chablis@gmail.com';
@@ -355,49 +357,83 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     try {
       // Construire le message pour l'IA avec une approche plus naturelle
       final prompt = '''
-      Voici les informations pour un voyage musical personnalisé :
+      **GROOVE NOMAD - DEVIS PERSONNALISÉ**
+      *Pour : Lola Beille*
+      *Date : ${DateTime.now().toString().substring(0, 10)}*
       
-      Pour : Lola Beille\n
-      - Nombre de voyageurs : ${_preferences.numberOfPeople ?? 'non précisé'}
-      - Destination : ${_preferences.destinationCountry ?? 'non précisé'}
-      - Période : ${_preferences.travelDate ?? 'non précisée'}
-      - Durée : ${_preferences.duration ?? 'non précisée'}
-      - Style musical : ${_preferences.musicGenre ?? 'non précisé'}
-      - Budget : ${_preferences.budget ?? 'non précisé'}
+      **INFORMATIONS CLIENT**
+      👥 Nombre de voyageurs : ${_preferences.numberOfPeople ?? 'Non précisé'}
+      🎯 Destination : ${_preferences.destinationCountry ?? 'Non précisée'}
+      📅 Période : ${_preferences.travelDate ?? 'Non précisée'}
+      ⏱️ Durée : ${_preferences.duration ?? 'Non précisée'}
+      🎵 Style musical : ${_preferences.musicGenre ?? 'Non précisé'}
+      💰 Budget : ${_preferences.budget ?? 'Non précisé'}
       
-      Crée une proposition de voyage détaillée avec :
+      **PROPOSITION DE VOYAGE**
       
-      1. UNIQUEMENT le nom d'un festival correspondant aux critères, sans description
+      🎪 **FESTIVAL SÉLECTIONNÉ**
+      [Nom du festival correspondant aux critères]
       
-      2. Une proposition de voyage détaillée avec les éléments suivants :
-         - Dates du séjour : [date de départ] au [date de retour] (incluant les jours de voyage)
-         - Vols A/R : [compagnie aérienne] - [prix par personne]€ (varie selon disponibilité)
-           * Aller : [date] - [ville de départ] → [ville d'arrivée] - [horaires]
-           * Retour : [date] - [ville d'arrivée] → [ville de départ] - [horaires]
-         - Hébergement : [type d\'hébergement] - [prix total]€ (du [date check-in] au [date check-out])
-         - Billets festival : [type de pass] - [prix par personne]€ (valable du [date début] au [date fin])
-         - Extras : [options comme transferts, assurances] - [prix total]€ (facultatif)
-         
-         TOTAL ESTIMÉ : [montant total]€
-         
-         Note : Les prix sont donnés à titre indicatif et peuvent varier selon la période de réservation et les disponibilités.
+      ✈️ **VOLS ALLER-RETOUR**
+      • Compagnie : [Nom de la compagnie aérienne]
+      • Prix par personne : [Prix] €
+      • Aller : [Date] - Départ [Heure] • [Ville de départ] → [Ville d'arrivée] • Arrivée [Heure]
+      • Retour : [Date] - Départ [Heure] • [Ville d'arrivée] → [Ville de départ] • Arrivée [Heure]
       
-      3. À la fin de ta réponse, pose la question suivante :
-      "Souhaitez-vous recevoir ce devis détaillé par email ? Si oui, répondez simplement OUI à ce message."
+      🏨 **HÉBERGEMENT**
+      • Type : [Hôtel/Auberge/Appartement]
+      • Nom : [Nom de l'établissement]
+      • Période : Du [Date check-in] au [Date check-out]
+      • Prix total : [Prix] €
       
-      IMPORTANT : Inclus des dates précises pour chaque élément (vols, hébergement, festival) en te basant sur la période indiquée.
+      🎟️ **BILLETS FESTIVAL**
+      • Type de pass : [Pass 1 jour/Pass 3 jours/Pass VIP]
+      • Période de validité : Du [Date début] au [Date fin]
+      • Prix par personne : [Prix] €
       
-      Sois concis et professionnel. Ne mets pas de texte avant la proposition de voyage.
+      🎁 **OPTIONS SUPPLÉMENTAIRES**
+      • Transferts aéroport : [Oui/Non] • [Prix] €
+      • Assurance voyage : [Oui/Non] • [Prix] €
+      • Autres options : [Détails] • [Prix] €
       
-      IMPORTANT : Les prix doivent être réalistes et variés, sans forcément correspondre au budget indiqué. 
-      Propose des options qui ont du sens par rapport à la destination et au type de festival, même si ça dépasse légèrement le budget mentionné.
+      💶 **RÉCAPITULATIF DES TARIFS**
+      • Vols : [Prix total] €
+      • Hébergement : [Prix total] €
+      • Billets festival : [Prix total] €
+      • Options : [Prix total] €
+      
+      💰 **TOTAL ESTIMÉ : [MONTANT TOTAL] €**
+      
+      *Les prix sont donnés à titre indicatif et peuvent varier selon la période de réservation et les disponibilités.*
+      
+      ---
+      
+      Souhaitez-vous recevoir ce devis détaillé par email ? Si oui, répondez simplement OUI à ce message.
+      
+      *Notre équipe reste à votre disposition pour toute question ou modification de ce devis.*
+      
+      **L'équipe Groove Nomad**
+      ✉️ contact@groovenomad.com
+      🌐 www.groovenomad.com
+      
+      [IMPORTANT : Utilise des dates et prix réalistes en fonction de la destination et de la période. Sois précis et professionnel dans ta réponse.]
       ''';
 
-      final response = await _getAIResponse(prompt);
+      String fullResponse = await _getAIResponse(prompt);
+      
+      // Séparer la réponse de l'IA et la question de confirmation
+      final parts = fullResponse.split('Souhaitez-vous recevoir ce devis détaillé par email ?');
+      final devisContent = parts[0].trim();
+      
+      // Stocker le contenu du devis pour l'enregistrement (sans la question de confirmation)
+      _lastDevisContent = devisContent;
       
       setState(() {
         _isTyping = false;
-        _messages.add(ChatMessage(text: response, isUser: false));
+        _messages.add(ChatMessage(
+          text: fullResponse, // Utilisation de fullResponse au lieu de response
+          isUser: false,
+        ));
       });
     } catch (e) {
       setState(() {
@@ -416,22 +452,51 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     return message.trim().toLowerCase() == 'oui';
   }
 
-  // Envoyer le devis par email via l'API
+  // Envoyer le devis par email via Airtable
   Future<void> _sendQuoteByEmail() async {
     setState(() {
       _isTyping = true;
       _messages.add(ChatMessage(
-        text: "Je vous envoie le devis par email à hector.chablis@gmail.com. Merci Lola !",
+        text: "Je vous envoie le devis par email. Merci Lola !",
         isUser: false,
       ));
     });
-    
-    // Ici, vous pourriez ajouter l'appel à votre service d'email
-    await Future.delayed(const Duration(seconds: 2));
-    
-    setState(() {
-      _isTyping = false;
-    });
+
+    try {
+      final airtable = AirtableService(
+        apiKey: 'votre_api_key_airtable', // À remplacer par votre clé API Airtable
+        baseId: 'votre_base_id',          // À remplacer par l'ID de votre base
+        tableName: 'Devis',                // Nom de votre table Airtable
+      );
+
+      // Récupérer la dernière réponse de l'IA
+      final lastAIMessage = _messages.lastWhere((m) => !m.isUser).text;
+      
+      final success = await airtable.saveDevis(
+        nomClient: 'Lola Beille',
+        email: 'hector.chablis@gmail.com',
+        resumeDevis: _lastDevisContent.isNotEmpty ? _lastDevisContent : lastAIMessage,
+      );
+
+      if (!success) {
+        _showError('Erreur lors de l\'enregistrement du devis. Veuillez réessayer.');
+      }
+    } catch (e) {
+      debugPrint('Erreur: $e');
+      _showError('Une erreur est survenue. Veuillez réessayer plus tard.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isTyping = false;
+        });
+      }
+    }
+  }
+
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
   }
 
   // Méthode pour envoyer un message et obtenir une réponse de l'API
