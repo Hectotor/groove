@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "428520790344",
+    "project_id": "groove-nomad-dff97",
+    "storage_bucket": "groove-nomad-dff97.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428520790344:android:de3134f06dacd539a6bb7d",
+        "android_client_info": {
+          "package_name": "com.example.groove_nomad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkbL3aoJuZTgk3YhtFPPBt8z5u1ODQPnw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
