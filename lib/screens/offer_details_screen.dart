@@ -132,10 +132,18 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(icon, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 8),
-          Text(text, style: const TextStyle(fontSize: 14)),
+          Expanded(
+            child: Text(
+              text, 
+              style: const TextStyle(fontSize: 14),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+            ),
+          ),
         ],
       ),
     );
@@ -631,17 +639,53 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
                   ),
                 ],
               ),
-              ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+              Row(
+                children: [
+                  IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(Icons.remove, size: 20),
+                    ),
+                    onPressed: quantity > 0 ? () {
+                      setState(() {
+                        _selection.selectedAccommodations[name] = quantity - 1;
+                      });
+                    } : null,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
                   ),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                ),
-                child: Text(isSelected ? 'Sélectionné' : 'Voir disponibilités'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      quantity.toString(),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(Icons.add, size: 20, color: Colors.white),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _selection.selectedAccommodations[name] = quantity + 1;
+                      });
+                    },
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
             ],
           ),

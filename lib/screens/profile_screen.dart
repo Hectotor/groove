@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -173,10 +174,16 @@ class ProfileScreen extends StatelessWidget {
                     onTap: () {},
                     context: context,
                   ),
-                  _buildSettingItem(
-                    icon: Icons.help_outline,
-                    title: 'Aide & Support',
-                    onTap: () {},
+                  _buildSettingItemWithImage(
+                    imagePath: 'assets/whatsapp.png',
+                    title: 'Nous contacter',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const WhatsAppContactScreen(),
+                        ),
+                      );
+                    },
                     context: context,
                   ),
                   const SizedBox(height: 20),
@@ -206,6 +213,8 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildStatColumn(String value, String label) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
           value,
@@ -214,11 +223,12 @@ class ProfileScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
+        const SizedBox(height: 4),
         Text(
           label,
           style: TextStyle(
-            color: Colors.grey[600],
             fontSize: 12,
+            color: Colors.grey[600],
           ),
         ),
       ],
@@ -246,6 +256,104 @@ class ProfileScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSettingItemWithImage({
+    required String imagePath,
+    required String title,
+    required VoidCallback onTap,
+    required BuildContext context,
+  }) {
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ListTile(
+        leading: SizedBox(
+          width: 24,
+          height: 24,
+          child: Image.asset(imagePath),
+        ),
+        title: Text(title),
+        trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+        onTap: onTap,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+}
+
+class WhatsAppContactScreen extends StatefulWidget {
+  const WhatsAppContactScreen({super.key});
+
+  @override
+  State<WhatsAppContactScreen> createState() => _WhatsAppContactScreenState();
+}
+
+class _WhatsAppContactScreenState extends State<WhatsAppContactScreen> {
+  late final WebViewController controller;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (String url) {
+            setState(() {
+              isLoading = true;
+            });
+          },
+          onPageFinished: (String url) {
+            setState(() {
+              isLoading = false;
+            });
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse('https://wa.me/33617038890'));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Image.asset('assets/whatsapp.png', width: 24, height: 24),
+            const SizedBox(width: 10),
+            const Text('Nous contacter'),
+          ],
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.open_in_browser),
+            onPressed: () {
+              controller.loadRequest(Uri.parse('https://www.whatsapp.com'));
+            },
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          WebViewWidget(controller: controller),
+          if (isLoading)
+            const Center(
+              child: CircularProgressIndicator(),
+            ),
+        ],
       ),
     );
   }
