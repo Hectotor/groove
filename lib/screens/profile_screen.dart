@@ -70,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Lola',
+                    'Lola Beille',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,

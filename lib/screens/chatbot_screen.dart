@@ -5,37 +5,53 @@ import 'package:groove_nomad/main.dart';
 
 // Modèle pour stocker les réponses du formulaire
 class FestivalPreferences {
-  int? numberOfPeople;
+  dynamic numberOfPeople;
   String? destinationCountry;
   String? destinationCity;
-  DateTime? travelDate;
-  int? duration;
+  dynamic travelDate;
+  dynamic duration;
   String? musicGenre;
-  double? budget;
+  dynamic budget;
   String? name;
   String? email;
-  
-  bool get isComplete => 
-      numberOfPeople != null &&
-      destinationCountry != null &&
-      destinationCity != null &&
-      travelDate != null &&
-      duration != null &&
-      musicGenre != null &&
-      budget != null &&
-      name != null &&
-      email != null;
-      
-  // Méthode pour convertir les préférences en Map
+
+  FestivalPreferences({
+    this.numberOfPeople,
+    this.destinationCountry,
+    this.destinationCity,
+    this.travelDate,
+    this.duration,
+    this.musicGenre,
+    this.budget,
+    this.name,
+    this.email,
+  });
+
+  // Méthodes pour obtenir les valeurs avec conversion
+  String get numberOfPeopleStr => _toString(numberOfPeople);
+  String get durationStr => _toString(duration);
+  String get budgetStr => _toString(budget);
+  String get travelDateStr {
+    if (travelDate == null) return '';
+    if (travelDate is String) return travelDate;
+    if (travelDate is DateTime) return travelDate.toString();
+    return travelDate.toString();
+  }
+
+  String _toString(dynamic value) {
+    if (value == null) return '';
+    return value.toString();
+  }
+
   Map<String, dynamic> toJson() {
     return {
-      'numberOfPeople': numberOfPeople,
+      'numberOfPeople': numberOfPeopleStr,
       'destinationCountry': destinationCountry,
       'destinationCity': destinationCity,
-      'travelDate': travelDate?.toIso8601String(),
-      'duration': duration,
+      'travelDate': travelDateStr,
+      'duration': durationStr,
       'musicGenre': musicGenre,
-      'budget': budget,
+      'budget': budgetStr,
       'name': name,
       'email': email,
     };
@@ -43,41 +59,35 @@ class FestivalPreferences {
   
   // Méthode pour définir une valeur par sa clé
   void operator []=(String key, dynamic value) {
+    if (value == null || value.toString().trim().isEmpty) return;
+    
     switch (key) {
       case 'numberOfPeople':
-        numberOfPeople = value as int?;
+        numberOfPeople = value.toString();
         break;
       case 'destinationCountry':
-        destinationCountry = value as String?;
+        destinationCountry = value.toString();
         break;
       case 'destinationCity':
-        destinationCity = value as String?;
+        destinationCity = value.toString();
         break;
       case 'travelDate':
-        if (value is String) {
-          travelDate = DateTime.tryParse(value);
-        } else if (value is DateTime) {
-          travelDate = value;
-        }
+        travelDate = value.toString();
         break;
       case 'duration':
-        duration = value as int?;
+        duration = value.toString();
         break;
       case 'musicGenre':
-        musicGenre = value as String?;
+        musicGenre = value?.toString();
         break;
       case 'budget':
-        if (value is int) {
-          budget = value.toDouble();
-        } else {
-          budget = value as double?;
-        }
+        budget = value.toString();
         break;
       case 'name':
-        name = value as String?;
+        name = value?.toString();
         break;
       case 'email':
-        email = value as String?;
+        email = value?.toString();
         break;
     }
   }
@@ -121,51 +131,41 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   String? _apiKey;
   
   // État du formulaire
-  final FestivalPreferences _preferences = FestivalPreferences();
+  late FestivalPreferences _preferences = FestivalPreferences()..email = 'hector.chablis@gmail.com';
   int _currentQuestionIndex = 0;
   bool _isFormComplete = false;
   
-  // Questions du formulaire
+  // Questions du formulaire - version conversationnelle
   final List<Map<String, dynamic>> _formQuestions = [
     {
-      'question': 'Pour combien de personnes souhaitez-vous réserver ?',
+      'question': 'Pour commencer, pour combien de personnes prévoyez-vous ce voyage musical ?',
       'key': 'numberOfPeople',
-      'type': 'number',
+      'type': 'text',
     },
     {
-      'question': 'Dans quel pays souhaitez-vous aller ?',
+      'question': 'Super ! Dans quel pays aimeriez-vous vivre cette expérience musicale ?',
       'key': 'destinationCountry',
       'type': 'text',
     },
     {
-      'question': 'Quand souhaitez-vous partir ? (par exemple: la semaine prochaine, en août, l\'été prochain, etc.)',
+      'question': 'Quand souhaitez-vous partir ? (par exemple : "la semaine prochaine", "en août", "l\'été prochain")',
       'key': 'travelDate',
       'type': 'text',
     },
     {
-      'question': 'Combien de jours durera votre séjour ?',
+      'question': 'Combien de temps souhaitez-vous rester sur place ? (par exemple : "un week-end", "une semaine", "10 jours")',
       'key': 'duration',
-      'type': 'number',
+      'type': 'text',
     },
     {
-      'question': 'Quel genre de musique préférez-vous ? (ex: électro, rock, jazz, etc.)',
+      'question': 'Quel style de musique vous fait vibrer ? (par exemple : "électro", "rock", "jazz", "hip-hop")',
       'key': 'musicGenre',
       'type': 'text',
     },
     {
-      'question': 'Quel est votre budget approximatif par personne (en €) ?',
+      'question': 'Quel est votre budget par personne pour ce voyage ? (par exemple : "environ 500€", "entre 1000 et 1500€")',
       'key': 'budget',
-      'type': 'number',
-    },
-    {
-      'question': 'Quel est votre prénom et nom ?',
-      'key': 'name',
       'type': 'text',
-    },
-    {
-      'question': 'Quelle est votre adresse email ?',
-      'key': 'email',
-      'type': 'email',
     },
   ];
 
@@ -176,7 +176,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     
     // Message d'accueil personnalisé
     _messages.add(ChatMessage(
-      text: '🎵 Bienvenue sur Groove Nomad ! Je vais vous aider à trouver votre evasion musicale pour vous.',
+      text: '🎵 Bienvenue sur Groove Nomad Lola Beille ! Je vais vous aider à trouver votre evasion musicale pour vous.',
       isUser: false,
     ));
     
@@ -287,6 +287,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   
   // Démarrer le formulaire
   void _startForm() {
+    // Réinitialiser l'index
+    _currentQuestionIndex = 0;
     _askNextQuestion();
   }
 
@@ -304,7 +306,7 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     }
   }
 
-  // Traiter la réponse de l'utilisateur
+  // Traiter la réponse de l'utilisateur de manière naturelle
   void _processAnswer(String answer) async {
     if (_currentQuestionIndex >= _formQuestions.length) return;
     
@@ -315,32 +317,14 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     final currentQuestion = _formQuestions[_currentQuestionIndex];
     final key = currentQuestion['key'] as String;
     
-    // Valider et traiter la réponse selon le type
     try {
-      switch (currentQuestion['type']) {
-        case 'number':
-          final value = int.tryParse(answer);
-          if (value != null) {
-            _preferences[key] = value;
-          } else {
-            _showError('Veuillez entrer un nombre valide');
-            return;
-          }
-          break;
-        case 'date':
-          // On laisse l'IA interpréter la date
-          _preferences[key] = answer;
-          break;
-        case 'email':
-          if (answer.contains('@') && answer.contains('.')) {
-            _preferences[key] = answer;
-          } else {
-            _showError('Veuillez entrer une adresse email valide');
-            return;
-          }
-          break;
-        default:
-          _preferences[key] = answer;
+      // Toutes les réponses sont traitées comme du texte, l'IA s'occupera de l'interprétation
+      _preferences[key] = answer.trim();
+      
+      // Pour les emails, on fait une vérification basique mais on laisse passer
+      if (key == 'email' && (!answer.contains('@') || !answer.contains('.'))) {
+        // On laisse passer quand même mais on pourrait ajouter un avertissement si nécessaire
+        debugPrint('Email potentiellement invalide : $answer');
       }
       
       _currentQuestionIndex++;
@@ -349,6 +333,8 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
       await Future.delayed(const Duration(milliseconds: 100));
       
       _askNextQuestion();
+    } catch (e) {
+      debugPrint('Erreur lors du traitement de la réponse: $e');
     } finally {
       // S'assurer que _isTyping est toujours désactivé même en cas d'erreur
       if (mounted) {
@@ -359,12 +345,6 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     }
   }
 
-  void _showError(String message) {
-    setState(() {
-      _messages.add(ChatMessage(text: message, isUser: false));
-    });
-  }
-
   // Générer une proposition personnalisée
   void _generateProposal() async {
     setState(() {
@@ -373,24 +353,44 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
 
     try {
-      // Construire le message pour l'IA
+      // Construire le message pour l'IA avec une approche plus naturelle
       final prompt = '''
-      L'utilisateur cherche un voyage musical avec les critères suivants :
-      - Nombre de personnes: ${_preferences.numberOfPeople}
-      - Pays de destination: ${_preferences.destinationCountry}
-      - Période de voyage: ${_preferences.travelDate}
-      - Durée du séjour: ${_preferences.duration} jours
-      - Genre musical: ${_preferences.musicGenre}
-      - Budget par personne: ${_preferences.budget}€
+      Voici les informations pour un voyage musical personnalisé :
       
-      Crée une proposition de voyage complète qui comprend :
-      1. Un festival de musique correspondant aux critères, dans une ville adaptée au genre musical
-      2. Des options de vols depuis la France avec des prix indicatifs
-      3. Des suggestions d'hébergements à proximité du festival avec des fourchettes de prix
-      4. Un budget global estimé
+      Pour : Lola Beille\n
+      - Nombre de voyageurs : ${_preferences.numberOfPeople ?? 'non précisé'}
+      - Destination : ${_preferences.destinationCountry ?? 'non précisé'}
+      - Période : ${_preferences.travelDate ?? 'non précisée'}
+      - Durée : ${_preferences.duration ?? 'non précisée'}
+      - Style musical : ${_preferences.musicGenre ?? 'non précisé'}
+      - Budget : ${_preferences.budget ?? 'non précisé'}
       
-      Sois précis dans tes propositions et utilise des informations réalistes. 
-      Si la période n'est pas précise, propose plusieurs options de dates avec des festivals.
+      Crée une proposition de voyage détaillée avec :
+      
+      1. UNIQUEMENT le nom d'un festival correspondant aux critères, sans description
+      
+      2. Une proposition de voyage détaillée avec les éléments suivants :
+         - Dates du séjour : [date de départ] au [date de retour] (incluant les jours de voyage)
+         - Vols A/R : [compagnie aérienne] - [prix par personne]€ (varie selon disponibilité)
+           * Aller : [date] - [ville de départ] → [ville d'arrivée] - [horaires]
+           * Retour : [date] - [ville d'arrivée] → [ville de départ] - [horaires]
+         - Hébergement : [type d\'hébergement] - [prix total]€ (du [date check-in] au [date check-out])
+         - Billets festival : [type de pass] - [prix par personne]€ (valable du [date début] au [date fin])
+         - Extras : [options comme transferts, assurances] - [prix total]€ (facultatif)
+         
+         TOTAL ESTIMÉ : [montant total]€
+         
+         Note : Les prix sont donnés à titre indicatif et peuvent varier selon la période de réservation et les disponibilités.
+      
+      3. À la fin de ta réponse, pose la question suivante :
+      "Souhaitez-vous recevoir ce devis détaillé par email ? Si oui, répondez simplement OUI à ce message."
+      
+      IMPORTANT : Inclus des dates précises pour chaque élément (vols, hébergement, festival) en te basant sur la période indiquée.
+      
+      Sois concis et professionnel. Ne mets pas de texte avant la proposition de voyage.
+      
+      IMPORTANT : Les prix doivent être réalistes et variés, sans forcément correspondre au budget indiqué. 
+      Propose des options qui ont du sens par rapport à la destination et au type de festival, même si ça dépasse légèrement le budget mentionné.
       ''';
 
       final response = await _getAIResponse(prompt);
@@ -411,15 +411,45 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     }
   }
 
-  // Méthode pour envoyer un message et obtenir une réponse de l'API
-  void _sendMessage(String message) async {
-    if (message.trim().isEmpty) return;
+  // Vérifier si l'utilisateur a répondu OUI pour recevoir le devis
+  bool _checkForEmailConfirmation(String message) {
+    return message.trim().toLowerCase() == 'oui';
+  }
+
+  // Envoyer le devis par email via l'API
+  Future<void> _sendQuoteByEmail() async {
+    setState(() {
+      _isTyping = true;
+      _messages.add(ChatMessage(
+        text: "Je vous envoie le devis par email à hector.chablis@gmail.com. Merci Lola !",
+        isUser: false,
+      ));
+    });
+    
+    // Ici, vous pourriez ajouter l'appel à votre service d'email
+    await Future.delayed(const Duration(seconds: 2));
     
     setState(() {
-      _messages.add(ChatMessage(text: message, isUser: true));
+      _isTyping = false;
+    });
+  }
+
+  // Méthode pour envoyer un message et obtenir une réponse de l'API
+  void _sendMessage(String message) async {
+    final trimmedMessage = message.trim();
+    if (trimmedMessage.isEmpty) return;
+    
+    setState(() {
+      _messages.add(ChatMessage(text: trimmedMessage, isUser: true));
       _isTyping = true;
       _messageController.clear();
     });
+    
+    // Vérifier si l'utilisateur a répondu OUI pour recevoir le devis
+    if (_checkForEmailConfirmation(trimmedMessage)) {
+      await _sendQuoteByEmail();
+      return;
+    }
 
     if (!_isFormComplete) {
       // Si le formulaire n'est pas complet, traiter la réponse
