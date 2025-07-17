@@ -229,7 +229,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Groove Nomad'),
+        title: const Text('Groove Nomad Voyages'),
         centerTitle: true,
       ),
       body: ListView(
@@ -256,8 +256,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: const Center(
                 child: Text(
-                  'Votre prochain voyage tout en musique vous attend',
-                  style: TextStyle(
+                  'Votre agence de voyage dédiée aux festivals de musique',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -270,7 +270,7 @@ class _HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 20),
           // Catégories de festivals
           const Text(
-            'Par genre musical',
+            'Nos séjours par genre musical',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 10),
@@ -340,18 +340,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Prochains festivals',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: const Text('Voir tout'),
-              ),
-            ],
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    'Nos offres de séjours',
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    'Tout voir',
+                    style: TextStyle(fontSize: 14),
+                  ),
+                ),
+              ],
+            ),
           ),
           const SizedBox(height: 16),
           _buildFestivalCard(

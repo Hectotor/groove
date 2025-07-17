@@ -231,6 +231,40 @@ class ProfileScreen extends StatelessWidget {
                     },
                     context: context,
                   ),
+                  
+                  // Section Suivez-nous
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0, top: 24.0, bottom: 8.0),
+                    child: Text(
+                      'SUIVEZ-NOUS',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        letterSpacing: 1,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildSocialIcon('assets/Facebook.png', () {
+                          // Lien vers Facebook
+                        }),
+                        _buildSocialIcon('assets/Instagram.png', () {
+                          // Lien vers Instagram
+                        }),
+                        _buildSocialIcon('assets/tiktok.jpg', () {
+                          // Lien vers TikTok
+                        }),
+                        _buildSocialIcon('assets/LinkedIn.png', () {
+                          // Lien vers LinkedIn
+                        }),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 20),
                   // Bouton de déconnexion
                   SizedBox(
@@ -329,6 +363,25 @@ class ProfileScreen extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSocialIcon(String imagePath, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 50,
+        height: 50,
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.grey[100],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.contain,
         ),
       ),
     );
