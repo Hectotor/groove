@@ -70,7 +70,7 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
                   const Text(
-                    'Emma Martin',
+                    'Lola',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -182,6 +182,51 @@ class ProfileScreen extends StatelessWidget {
                         MaterialPageRoute(
                           builder: (context) => const WhatsAppContactScreen(),
                         ),
+                      );
+                    },
+                    context: context,
+                  ),
+                  _buildSettingItem(
+                    icon: Icons.language,
+                    title: 'Changer de langue',
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Changer de langue'),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                ListTile(
+                                  leading: const Text('🇫🇷'),
+                                  title: const Text('Français'),
+                                  trailing: const Icon(Icons.check, color: Colors.blue),
+                                  onTap: () {
+                                    // TODO: Implémenter le changement de langue vers le français
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                const Divider(),
+                                ListTile(
+                                  leading: const Text('🇬🇧'),
+                                  title: const Text('English'),
+                                  trailing: null,
+                                  onTap: () {
+                                    // TODO: Implémenter le changement de langue vers l'anglais
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('ANNULER'),
+                              ),
+                            ],
+                          );
+                        },
                       );
                     },
                     context: context,

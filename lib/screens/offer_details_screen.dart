@@ -42,9 +42,9 @@ class SelectionState {
 
   double _getPriceForTicket(String ticket) {
     switch (ticket) {
-      case 'Pass 3 Jais VIP':
+      case 'Pass 3 jours VIP':
         return 499.0;
-      case 'Pass 3 Jais Standard':
+      case 'Pass 3 jours Standard':
         return 299.0;
       case 'Pass 1 Jour':
         return 129.0;
@@ -112,8 +112,8 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
   void initState() {
     super.initState();
     // Initialisation des sélections avec des entiers (0 = non sélectionné)
-    _selection.selectedTickets['Pass 3 Jais VIP'] = 0;
-    _selection.selectedTickets['Pass 3 Jais Standard'] = 0;
+    _selection.selectedTickets['Pass 3 jours VIP'] = 0;
+    _selection.selectedTickets['Pass 3 jours Standard'] = 0;
     _selection.selectedTickets['Pass 1 Jour'] = 0;
     
     _selection.selectedFlights['Air France'] = 0;
@@ -253,14 +253,14 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
     return Column(
       children: [
         _buildTicketOption(context, 
-          'Pass 3 Jais VIP',
+          'Pass 3 jours VIP',
           'Accès illimité aux zones VIP, toilettes privées, recharge de téléphone, cadeau de bienvenue',
           '499€',
           true,
         ),
         const SizedBox(height: 12),
         _buildTicketOption(context, 
-          'Pass 3 Jais Standard',
+          'Pass 3 jours Standard',
           'Accès général aux concerts et installations',
           '299€',
           false,
@@ -917,9 +917,9 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
 
   double _getPriceForTicket(String ticket) {
     switch (ticket) {
-      case 'Pass 3 Jais VIP':
+      case 'Pass 3 jours VIP':
         return 499.0;
-      case 'Pass 3 Jais Standard':
+      case 'Pass 3 jours Standard':
         return 299.0;
       case 'Pass 1 Jour':
         return 129.0;
