@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'splash_screen.dart';
 
-Future<void> main() async {
+// Clé API directement dans le code (temporaire pour le débogage)
+const String openAiApiKey = 'AIzaSyCB4ZRqEtK0jq1K6pe8YIEbo6ZDClL-aa4';
+
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Charger les variables d'environnement
-  await dotenv.load(fileName: ".env");
   
   // Temporairement désactivé pour résoudre les problèmes d'initialisation
   // await Firebase.initializeApp(

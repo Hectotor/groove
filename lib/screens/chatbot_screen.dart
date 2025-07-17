@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:groove_nomad/main.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -28,13 +28,9 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   @override
   void initState() {
     super.initState();
-    // Charger les variables d'environnement
-    dotenv.load().then((_) {
-      setState(() {
-        _apiKey = dotenv.env['OPENAI_API_KEY'];
-      });
-    });
-    super.initState();
+    // Utilisation directe de la clé API depuis main.dart
+    _apiKey = openAiApiKey;
+    
     // Ajouter les messages d'accueil
     _messages.add(ChatMessage(
       text: '🎵 Bonjour ! Je suis votre assistant spécialisé dans les festivals de musique. Comment puis-je vous aider à vivre une expérience inoubliable ?',
@@ -209,10 +205,10 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   Future<String> _getAIResponse(String message) async {
     // Vérifier que la clé API est chargée
     if (_apiKey == null || _apiKey!.isEmpty) {
-      throw Exception('Clé API non configurée');
+      return 'Désolé, le service de chat n\'est pas configuré correctement. Veuillez contacter le support.';
     }
     
-    // Utilisation de l'API Google Gemini avec la clé des variables d'environnement
+    // Utilisation de l'API Google Gemini avec le modèle gemini-2.0-flash
     final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_apiKey');
     
     try {
@@ -224,18 +220,18 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
         body: jsonEncode({
           'contents': [
             {
+              'role': 'user',
               'parts': [
-                {
-                  'text': 'Tu es un assistant spécialisé dans les festivals de musique. Tu aides les utilisateurs à trouver des informations sur les festivals, à planifier leur voyage, et à répondre à toutes leurs questions concernant les événements musicaux. Voici la question de l\'utilisateur: $message'
-                }
+                {'text': 'Tu es un assistant spécialisé dans les festivals de musique. Tu aides les utilisateurs à trouver des informations sur les festivals, à planifier leur voyage, et à répondre à toutes leurs questions concernant les événements musicaux. Sois amical, professionnel et précis dans tes réponses. Voici la question de l\'utilisateur: $message'}
               ]
             }
           ],
           'generationConfig': {
             'temperature': 0.7,
-            'maxOutputTokens': 800,
+            'topK': 40,
             'topP': 0.8,
-            'topK': 40
+            'maxOutputTokens': 800,
+            'stopSequences': []
           },
         }),
       );
