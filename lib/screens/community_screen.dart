@@ -186,7 +186,7 @@ class CommunityScreen extends StatelessWidget {
         ClipRRect(
           borderRadius: BorderRadius.circular(8.0),
           child: Image.network(
-            'https://images.unsplash.com/photo-1502602897457-915dd8b808e7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80',
+            'https://images.unsplash.com/photo-1506157786151-b8491531f063?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
             height: 200,
             width: double.infinity,
             fit: BoxFit.cover,
@@ -195,11 +195,17 @@ class CommunityScreen extends StatelessWidget {
         const SizedBox(height: 10),
         // Actions de la publication
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            _buildActionButton(Icons.thumb_up_outlined, '$likes J\'aime'),
-            _buildActionButton(Icons.chat_bubble_outline, '$comments Commentaires'),
-            _buildActionButton(Icons.share, 'Partager'),
+            Flexible(
+              child: _buildActionButton(Icons.thumb_up_outlined, '$likes J\'aime'),
+            ),
+            Flexible(
+              child: _buildActionButton(Icons.chat_bubble_outline, '$comments Commentaires'),
+            ),
+            Flexible(
+              child: _buildActionButton(Icons.share, 'Partager'),
+            ),
           ],
         ),
       ],
@@ -209,10 +215,15 @@ class CommunityScreen extends StatelessWidget {
   Widget _buildActionButton(IconData icon, String label) {
     return TextButton.icon(
       onPressed: () {},
-      icon: Icon(icon, size: 20),
-      label: Text(label, style: const TextStyle(fontSize: 12)),
+      icon: Icon(icon, size: 18),
+      label: Text(
+        label, 
+        style: const TextStyle(fontSize: 11),
+        overflow: TextOverflow.ellipsis,
+      ),
       style: TextButton.styleFrom(
         foregroundColor: Colors.grey[700],
+        padding: const EdgeInsets.symmetric(horizontal: 4),
       ),
     );
   }

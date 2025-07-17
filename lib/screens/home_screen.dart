@@ -189,7 +189,7 @@ class HomeScreen extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               image: const DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'),
+                image: NetworkImage('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -264,7 +264,7 @@ class HomeScreen extends StatelessWidget {
             'Indio, Californie',
             '11-13 Avril 2025',
             'À partir de 549€',
-            'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
+            'https://images.unsplash.com/photo-1506157786151-b8491531f063?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80',
             context,
           ),
           _buildFestivalCard(
