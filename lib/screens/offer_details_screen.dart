@@ -77,11 +77,11 @@ class SelectionState {
 
   double _getPriceForExtra(String extra) {
     switch (extra) {
-      case 'Transfert Aéroport':
+      case '🚐 Transfert Aéroport':
         return 25.0;
-      case 'Dîner Gourmet':
+      case '🍽️ Dîner Gourmet':
         return 75.0;
-      case 'Pack Éco-Responsable':
+      case '🎒 Pack Éco-Responsable':
         return 35.0;
       default:
         return 0.0;
@@ -122,9 +122,9 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
     _selection.selectedAccommodations['Hôtel Festival Plaza'] = 0;
     _selection.selectedAccommodations['Auberge de Jeunesse Central'] = 0;
     
-    _selection.selectedExtras['Transfert Aéroport'] = 0;
-    _selection.selectedExtras['Dîner Gourmet'] = 0;
-    _selection.selectedExtras['Pack Éco-Responsable'] = 0;
+    _selection.selectedExtras['🚊 Transfert Aéroport'] = 0;
+    _selection.selectedExtras['🍽️ Dîner Gourmet'] = 0;
+    _selection.selectedExtras['🎒 Pack Éco-Responsable'] = 0;
   }
 
   // Méthode utilitaire pour construire une ligne d'information
@@ -908,11 +908,11 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
 
   double _getPriceForExtra(String extra) {
     switch (extra) {
-      case 'Transfert Aéroport':
+      case '🚐 Transfert Aéroport':
         return 25.0;
-      case 'Dîner Gourmet':
+      case '🍽️ Dîner Gourmet':
         return 75.0;
-      case 'Pack Éco-Responsable':
+      case '🎒 Pack Éco-Responsable':
         return 35.0;
       default:
         return 0.0;
