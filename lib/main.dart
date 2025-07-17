@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'splash_screen.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Charger les variables d'environnement
+  await dotenv.load(fileName: ".env");
+  
   // Temporairement désactivé pour résoudre les problèmes d'initialisation
   // await Firebase.initializeApp(
   //   options: DefaultFirebaseOptions.currentPlatform,
   // );
+  
   runApp(const GrooveNomadApp());
 }
 

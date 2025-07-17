@@ -125,19 +125,19 @@ class ProfileScreen extends StatelessWidget {
                   ),
                   _buildSettingItem(
                     icon: Icons.festival,
-                    title: 'Festivals à venir',
+                    title: 'Mes voyages à venir',
                     onTap: () {},
                     context: context,
                   ),
                   _buildSettingItem(
                     icon: Icons.history,
-                    title: 'Festivals passés',
+                    title: 'Mes voyages passés',
                     onTap: () {},
                     context: context,
                   ),
                   _buildSettingItem(
                     icon: Icons.favorite_border,
-                    title: 'Festivals favoris',
+                    title: 'Mes voyages favoris',
                     onTap: () {},
                     context: context,
                   ),

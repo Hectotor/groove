@@ -256,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               child: const Center(
                 child: Text(
-                  'Votre prochain festival de musique vous attend',
+                  'Votre prochain voyage tout en musique vous attend',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 24,

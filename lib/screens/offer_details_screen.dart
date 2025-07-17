@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SelectionState {
   Map<String, int> selectedTickets = {};
@@ -122,7 +123,7 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
     _selection.selectedAccommodations['Hôtel Festival Plaza'] = 0;
     _selection.selectedAccommodations['Auberge de Jeunesse Central'] = 0;
     
-    _selection.selectedExtras['🚊 Transfert Aéroport'] = 0;
+    _selection.selectedExtras['🚐 Transfert Aéroport'] = 0;
     _selection.selectedExtras['🍽️ Dîner Gourmet'] = 0;
     _selection.selectedExtras['🎒 Pack Éco-Responsable'] = 0;
   }
@@ -191,9 +192,7 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  // TODO: Implémenter la logique de réservation
-                },
+                onPressed: _onBookNow,
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
@@ -211,6 +210,56 @@ class _OfferDetailsScreenState extends State<OfferDetailsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _onBookNow() async {
+    try {
+      // Récupérer le prix total TTC
+      final totalAmount = _selection.getTotal();
+      
+      // Créer l'URL PayPal avec le montant dynamique
+      // Remplacez 'VotreNom' par votre nom d'utilisateur PayPal
+      final url = 'https://www.paypal.com/paypalme/VotreNom/${totalAmount.toStringAsFixed(2)}EUR';
+      final uri = Uri.parse(url);
+      
+      // Essayer d'ouvrir directement l'URL
+      final canLaunch = await canLaunchUrl(uri);
+      
+      if (canLaunch) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+          webOnlyWindowName: '_blank',
+        );
+      } else {
+        // Si canLaunch échoue, essayer quand même d'ouvrir l'URL
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+          webOnlyWindowName: '_blank',
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      // En cas d'erreur, afficher une alerte
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Erreur'),
+            content: const Text('Impossible d\'ouvrir le lien de paiement. Veuillez réessayer plus tard.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   Widget _buildFestivalHeader() {

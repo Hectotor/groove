@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ChatbotScreen extends StatefulWidget {
   const ChatbotScreen({super.key});
@@ -22,8 +23,17 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
   final List<ChatMessage> _messages = [];
   bool _isTyping = false;
   
+  String? _apiKey;
+
   @override
   void initState() {
+    super.initState();
+    // Charger les variables d'environnement
+    dotenv.load().then((_) {
+      setState(() {
+        _apiKey = dotenv.env['OPENAI_API_KEY'];
+      });
+    });
     super.initState();
     // Ajouter les messages d'accueil
     _messages.add(ChatMessage(
@@ -197,9 +207,13 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
 
   // Méthode pour obtenir une réponse de l'API d'IA
   Future<String> _getAIResponse(String message) async {
-    // Utilisation de l'API Google Gemini
-    final apiKey = 'AIzaSyCB4ZRqEtK0jq1K6pe8YIEbo6ZDClL-aa4';
-    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey');
+    // Vérifier que la clé API est chargée
+    if (_apiKey == null || _apiKey!.isEmpty) {
+      throw Exception('Clé API non configurée');
+    }
+    
+    // Utilisation de l'API Google Gemini avec la clé des variables d'environnement
+    final url = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_apiKey');
     
     try {
       final response = await http.post(
