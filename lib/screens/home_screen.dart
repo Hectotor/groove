@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'offer_details_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -190,20 +192,27 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OfferDetailsScreen(
+                                festivalName: name,
+                                festivalLocation: location,
+                                festivalDate: date,
+                              ),
+                            ),
+                          );
+                        },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: Theme.of(context).primaryColor,
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          backgroundColor: Theme.of(context).primaryColor,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          'Voir les offres',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
+                        child: const Text('Voir les offres'),
                       ),
                     ),
                   ],
