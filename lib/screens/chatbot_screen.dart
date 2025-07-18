@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:groove_nomad/main.dart';
-import 'package:groove_nomad/services/airtable_service.dart';
+import 'package:groove_nomad/services/pdf_service.dart';
 
 // Modèle pour stocker les réponses du formulaire
 class FestivalPreferences {
@@ -473,23 +473,33 @@ class _ChatbotScreenState extends State<ChatbotScreen> {
     });
 
     try {
-      final airtable = AirtableService(
-        apiKey: airtableApiKey,
-        baseId: airtableBaseId,
-        tableName: airtableTableName,
-      );
-
       // Récupérer la dernière réponse de l'IA
       final lastAIMessage = _messages.lastWhere((m) => !m.isUser).text;
+      final devisContent = _lastDevisContent.isNotEmpty ? _lastDevisContent : lastAIMessage;
       
-      final success = await airtable.saveDevis(
-        nomClient: 'Lola Beille',
+      // Générer le PDF et l'envoyer à Airtable avec le lien Catbox
+      final success = await PdfService.generateAndSendPdf(
+        clientName: 'Lola Beille',
         email: 'hector.chablis@gmail.com',
-        resumeDevis: _lastDevisContent.isNotEmpty ? _lastDevisContent : lastAIMessage,
+        preferences: {
+          'numberOfPeople': _preferences.numberOfPeople?.toString() ?? 'Non précisé',
+          'destinationCountry': _preferences.destinationCountry ?? 'Non précisée',
+          'travelDate': _preferences.travelDate ?? 'Non précisée',
+          'duration': _preferences.duration ?? 'Non précisée',
+          'musicGenre': _preferences.musicGenre ?? 'Non précisé',
+          'budget': _preferences.budget?.toString() ?? 'Non précisé',
+        },
+        devisDetails: {
+          'contenu': devisContent,
+          'date': DateTime.now().toIso8601String(),
+        },
+        airtableApiKey: airtableApiKey,
+        airtableBaseId: airtableBaseId,
+        airtableTableName: airtableTableName,
       );
 
       if (!success) {
-        _showError('Erreur lors de l\'enregistrement du devis. Veuillez réessayer.');
+        _showError('Erreur lors de la génération du PDF et de l\'enregistrement. Veuillez réessayer.');
       }
     } catch (e) {
       debugPrint('Erreur: $e');
