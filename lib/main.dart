@@ -3,20 +3,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'splash_screen.dart';
 
 // Clés API (configuration temporaire)
-const String openAiApiKey = 'AIzaSyCB4ZRqEtK0jq1K6pe8YIEbo6ZDClL-aa4';
+const String openAiApiKey = 'CLÉ API';
 
 // Configuration Airtable
-const String airtableApiKey = 'pat277eOGKWhtvCFG.92393623e73c60487b6f01001a976736a8129990210e99342c115aaedfc1b486';
-const String airtableBaseId = 'appAKwBROwR1YdbgH';  // Doit commencer par 'app'
-const String airtableTableName = 'tbl8nnIC9j2xLbxil';  // ID de la table
+const String airtableApiKey = 'CLÉ API';
+const String airtableBaseId = 'CLÉ API';  // Doit commencer par 'app'
+const String airtableTableName = 'CLÉ API';  // ID de la table
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Temporairement désactivé pour résoudre les problèmes d'initialisation
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
   
   runApp(const GrooveNomadApp());
 }
